@@ -1,13 +1,31 @@
 package com.metype.makecraft.utils;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.entity.EntityEquipment;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.StackWithSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.StyleSpriteSource;
+import net.minecraft.util.ErrorReporter;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class CommandUtils {
@@ -41,5 +59,50 @@ public class CommandUtils {
             string = string.replaceFirst("\\{}", String.valueOf(o));
         }
         return string;
+    }
+
+    public static boolean savePlayerInventoryTo(String dataName, ServerPlayerEntity player) {
+        PlayerInventory inv = player.getInventory();
+
+        NbtWriteView wv = NbtWriteView.create(ErrorReporter.EMPTY, player.getEntityWorld().getRegistryManager());
+
+        inv.writeData(wv.getListAppender("Inventory", StackWithSlot.CODEC));
+
+        NbtWriteView.ListAppender<StackWithSlot> list = wv.getListAppender("Equipment", StackWithSlot.CODEC);
+
+        for(int slot : PlayerInventory.EQUIPMENT_SLOTS.keySet()) {
+            ItemStack itemStack = inv.getStack(slot);
+            if (!itemStack.isEmpty()) {
+                list.add(new StackWithSlot(slot, itemStack));
+            }
+        }
+
+        String invData = wv.getNbt().toString();
+
+        try {
+            DBUtils.getInstance().saveInventory(player.getUuid(), dataName, invData);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void loadPlayerInventoryFrom(String dataName, ServerPlayerEntity player) {
+        try {
+            String data = DBUtils.getInstance().getInventory(player.getUuid(), dataName);
+            PlayerInventory inv = player.getInventory();
+            inv.clear();
+            if(data == null) {
+                return;
+            }
+            ReadView rv = NbtReadView.create(ErrorReporter.EMPTY, player.getEntityWorld().getRegistryManager(), NbtHelper.fromNbtProviderString(data));
+            inv.readData(rv.getTypedListView("Inventory", StackWithSlot.CODEC));
+            ReadView.TypedListReadView<StackWithSlot> equipment = rv.getTypedListView("Equipment", StackWithSlot.CODEC);
+            equipment.forEach(stackWithSlot -> {
+                inv.setStack(stackWithSlot.slot(), stackWithSlot.stack());
+            });
+        } catch (CommandSyntaxException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

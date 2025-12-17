@@ -1,13 +1,17 @@
 package com.metype.makecraft;
 
 import com.metype.makecraft.command.*;
+import com.metype.makecraft.command.farmworld.FarmworldBaseCommand;
+import com.metype.makecraft.command.gamemode.GamemodeBaseCommand;
+import com.metype.makecraft.command.rank.RankBaseCommand;
+import com.metype.makecraft.command.spawn.SpawnSetCommand;
+import com.metype.makecraft.command.spawn.SpawnBaseCommand;
 import com.metype.makecraft.config.MainConfig;
 import com.metype.makecraft.events.ServerCloseEventListener;
 import com.metype.makecraft.rank.RankUtils;
 import com.metype.makecraft.utils.DBUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -41,7 +45,7 @@ public class MakeCraft implements ModInitializer {
             ServerCloseEventListener.runRestartChecks();
             ServerPlayerEvents.JOIN.register(serverPlayerEntity -> {
                 if(serverPlayerEntity.getEntityWorld().getRegistryKey().getValue().getNamespace().equalsIgnoreCase("farmworld")){
-                    SpawnCommand.TeleportPlayerToSpawn(serverPlayerEntity);
+                    SpawnBaseCommand.TeleportPlayerToSpawn(serverPlayerEntity);
                     serverPlayerEntity.sendMessage(Text.of("You were in the farmworlds when you logged out and have been returned to spawn."));
                 }
                 if(RankUtils.byID(MAIN_CONFIG.joinRank).isPresent()) {
@@ -60,11 +64,11 @@ public class MakeCraft implements ModInitializer {
     }
 
     private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        new BaseCommand().register(dispatcher);
-        new SetSpawnCommand().register(dispatcher);
-        new SpawnCommand().register(dispatcher);
-        new FarmworldTeleportCommand().register(dispatcher);
-        new RefreshFarmWorldsCommand().register(dispatcher);
-        new RankCommand().register(dispatcher);
+        dispatcher.register(new BaseCommand().register());
+        dispatcher.register(new SpawnSetCommand().register());
+        dispatcher.register(new SpawnBaseCommand().register());
+        dispatcher.register(new RankBaseCommand().register());
+        dispatcher.register(new FarmworldBaseCommand().register());
+        dispatcher.register(new GamemodeBaseCommand().register());
     }
 }

@@ -2,6 +2,12 @@ package com.metype.makecraft.rank;
 
 import com.metype.makecraft.MakeCraft;
 import com.metype.makecraft.utils.DBUtils;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.PlainTextContent;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -37,6 +43,26 @@ public class RankUtils {
         } catch (SQLException e) {
             MakeCraft.LOGGER.error("SQL Error!", e);
         }
+    }
+
+    public static void giveRankToUsers(Rank rank, Collection<ServerPlayerEntity> users, CommandContext<ServerCommandSource> context) {
+        for(ServerPlayerEntity user : users) {
+            if(RankUtils.addRankForUser(user.getUuid(), rank)) {
+                context.getSource().sendFeedback(() -> Text.of("Rank " + rank.id + " given to " + user.getStringifiedName()), true);
+                if (rank.name.isEmpty()) {
+                    user.sendMessage(MutableText.of(PlainTextContent.of("You have been granted a ")).append(MutableText.of(PlainTextContent.of("Color Rank")).setStyle(rank.name_color)));
+                } else {
+                    user.sendMessage(MutableText.of(PlainTextContent.of("You have been granted the rank ")).append(MutableText.of(PlainTextContent.of(rank.name)).setStyle(rank.rank_color)));
+                }
+            }
+        }
+    }
+
+    public static void showRankFormatting(Rank rank, ServerPlayerEntity player) {
+        player.sendMessage(
+                MutableText.of(PlainTextContent.of("Applied rank! You are now "))
+                        .append(player.getDisplayName()), false
+        );
     }
 
     public static void deleteRank(@NotNull String ID) {

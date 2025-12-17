@@ -1,10 +1,12 @@
 package com.metype.makecraft.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 
 public interface ICommand {
-    void register(CommandDispatcher<ServerCommandSource> dispatcher);
-    int execute(CommandContext<ServerCommandSource> context);
+    LiteralArgumentBuilder<ServerCommandSource> register();
+    int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
 }

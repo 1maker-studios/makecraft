@@ -17,12 +17,7 @@ public class ServerPlayerEntityMixin {
         PlayerEntity player = (PlayerEntity) (Object) this;
         Rank userRank = RankUtils.getRankForUser(player.getUuid()).orElse(null);
         if(userRank == null) return original.call();
-        MutableText playerName = MutableText.of(original.call().getContent()).setStyle(userRank.name_color);
-        if(!userRank.name.isEmpty()) {
-            MutableText playerRank = MutableText.of(PlainTextContent.of("[")).setStyle(Style.EMPTY.withColor(Colors.GRAY)).append(MutableText.of(PlainTextContent.of(userRank.name)).setStyle(userRank.rank_color).append(MutableText.of(PlainTextContent.of("]")).setStyle(Style.EMPTY.withColor(Colors.GRAY))));
-            return playerRank.append(" ").append(playerName);
-        }
-        return playerName;
+        return userRank.getRankFormatting(original.call().getString());
     }
 
 }

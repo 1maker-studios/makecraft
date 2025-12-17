@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 
 public class DBUtils {
     private Connection connection;
+    private Connection connection2;
     private Statement statement;
+    private Statement statement2;
     private PreparedStatement insertRankStatement;
     private PreparedStatement getRankStatement;
     private PreparedStatement getRanksStatement;
@@ -23,6 +25,9 @@ public class DBUtils {
     private PreparedStatement getRankHoldersStatement;
     private PreparedStatement saveRankHolderStatement;
 
+    private PreparedStatement saveInventoryStatement;
+    private PreparedStatement getInventoryStatement;
+
     private static DBUtils instance;
 
     public static void init() throws SQLException {
@@ -30,10 +35,14 @@ public class DBUtils {
             instance = new DBUtils();
         }
         instance.connection = DriverManager.getConnection("jdbc:sqlite:makecraft.db");
+        instance.connection2 = DriverManager.getConnection("jdbc:sqlite:inv_data.db");
         instance.statement = instance.connection.createStatement();
+        instance.statement2 = instance.connection2.createStatement();
         instance.statement.setQueryTimeout(10);
+        instance.statement2.setQueryTimeout(10);
         instance.statement.execute("create table if not exists ranks (key string PRIMARY KEY, name string, rank_color string, name_color string)");
         instance.statement.execute("create table if not exists rank_owners (key string PRIMARY KEY, rank_list string, selected string)");
+        instance.statement2.execute("create table if not exists inv_storage (key string, gamemode string, data string, PRIMARY KEY (key, gamemode))");
         instance.insertRankStatement = instance.connection.prepareStatement("insert into ranks values(?, ?, ?, ?) on conflict(key) do update SET name=excluded.name, rank_color=excluded.rank_color, name_color=excluded.name_color");
         instance.getRankStatement = instance.connection.prepareStatement("select * from ranks where key = ?");
         instance.getRanksStatement = instance.connection.prepareStatement("select * from ranks");
@@ -42,10 +51,27 @@ public class DBUtils {
         instance.saveRankHolderStatement = instance.connection.prepareStatement("insert into rank_owners values(?, ?, ?) on conflict(key) do update SET rank_list=excluded.rank_list, selected=excluded.selected");
         instance.getRankHolderStatement = instance.connection.prepareStatement("select * from rank_owners where key = ?");
         instance.getRankHoldersStatement = instance.connection.prepareStatement("select * from rank_owners");
+
+        instance.saveInventoryStatement = instance.connection2.prepareStatement("insert into inv_storage values(?, ?, ?) on conflict(key, gamemode) do update SET data=excluded.data");
+        instance.getInventoryStatement = instance.connection2.prepareStatement("select * from inv_storage where key = ? and gamemode = ?");
     }
 
     public static DBUtils getInstance() {
         return instance;
+    }
+
+    public void saveInventory(@NotNull UUID user, @NotNull String gamemode, @NotNull String invData) throws SQLException {
+        saveInventoryStatement.setString(1, user.toString());
+        saveInventoryStatement.setString(2, gamemode);
+        saveInventoryStatement.setString(3, invData);
+        saveInventoryStatement.executeUpdate();
+    }
+
+    public String getInventory(@NotNull UUID user, @NotNull String gamemode) throws SQLException {
+        getInventoryStatement.setString(1, user.toString());
+        getInventoryStatement.setString(2, gamemode);
+        ResultSet results = getInventoryStatement.executeQuery();
+        return results.getString("data");
     }
 
     public void updateRank(@NotNull Rank rank) throws SQLException {

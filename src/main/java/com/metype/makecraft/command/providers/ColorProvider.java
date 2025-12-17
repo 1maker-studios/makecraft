@@ -1,4 +1,4 @@
-package com.metype.makecraft.command;
+package com.metype.makecraft.command.providers;
 
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.context.CommandContext;
@@ -12,6 +12,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import java.util.concurrent.CompletableFuture;
 
 public class ColorProvider implements SuggestionProvider<ServerCommandSource> {
+
+    private ColorProvider() {
+
+    }
+
+    public static ColorProvider color() {
+        return new ColorProvider();
+    }
+
     @Override
     public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         String input = builder.getRemainingLowerCase();

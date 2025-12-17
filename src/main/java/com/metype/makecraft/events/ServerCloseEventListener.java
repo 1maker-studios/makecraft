@@ -1,7 +1,7 @@
 package com.metype.makecraft.events;
 
 import com.metype.makecraft.MakeCraft;
-import com.metype.makecraft.command.SpawnCommand;
+import com.metype.makecraft.command.spawn.SpawnBaseCommand;
 import com.metype.makecraft.config.ConfigUtils;
 import com.metype.makecraft.utils.Utils;
 import me.isaiah.multiworld.ICreator;
@@ -17,9 +17,6 @@ import net.minecraft.text.Text;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.util.Identifier;
@@ -104,7 +101,7 @@ public class ServerCloseEventListener {
             long seed = random.nextInt(Integer.MAX_VALUE);
             for(ServerPlayerEntity player: server.getPlayerManager().getPlayerList()) {
                 if(player.getEntityWorld().getRegistryKey().getValue().getNamespace().equalsIgnoreCase("farmworld")){
-                    SpawnCommand.TeleportPlayerToSpawn(player);
+                    SpawnBaseCommand.TeleportPlayerToSpawn(player);
                 }
             }
             if(MakeCraft.MAIN_CONFIG.useFarmWorlds) {
