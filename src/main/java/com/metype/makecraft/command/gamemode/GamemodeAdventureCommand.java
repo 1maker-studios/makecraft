@@ -11,15 +11,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class GamemodeAdventureCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("adventure")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("adventure")
                 .requires(Permissions.require("makecraft.gamemode.adventure", 2))
-                .executes(this::execute);
+                .executes(this::execute));
     }
 
     @Override

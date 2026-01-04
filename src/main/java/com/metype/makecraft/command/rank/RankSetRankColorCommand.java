@@ -16,6 +16,7 @@ import net.minecraft.text.PlainTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -23,12 +24,12 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class RankSetRankColorCommand implements ICommand {
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("rank_color").
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("rank_color").
                 then(argument("color", StringArgumentType.greedyString()).
                         suggests(ColorProvider.color()).
                         executes(this::execute)
-                );
+                ));
     }
 
     @Override

@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 
-public class InteractOnlyScreenHandler extends GenericContainerScreenHandler {
-    public InteractOnlyScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {
+public class DummyScreenHandler extends GenericContainerScreenHandler {
+    public DummyScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {
         super(type, syncId, playerInventory, inventory, rows);
     }
 
@@ -20,3 +20,4 @@ public class InteractOnlyScreenHandler extends GenericContainerScreenHandler {
         return ItemStack.EMPTY;
     }
 }
+

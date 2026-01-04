@@ -42,6 +42,7 @@ public class RankIDProvider implements SuggestionProvider<ServerCommandSource> {
 
         String input = builder.getRemainingLowerCase();
         for(Rank r : ranks) {
+            if(r.id == null) continue;
             if(r.id.contains(input)) {
                 builder.suggest(r.id);
             }

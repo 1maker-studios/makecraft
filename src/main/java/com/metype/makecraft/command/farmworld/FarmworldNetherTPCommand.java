@@ -11,15 +11,17 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class FarmworldNetherTPCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("nether")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("nether")
                 .requires(Permissions.require("makecraft.farmworld.nether", 0))
-                .executes(this::execute);
+                .executes(this::execute));
     }
 
     @Override

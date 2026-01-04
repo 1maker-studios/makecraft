@@ -11,15 +11,17 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class SpawnSetCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("set")
-                .requires(cs -> Permissions.check(cs, "makecraft.spawn.set", 0))
-                .executes(this::execute);
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("set")
+                .requires(cs -> Permissions.check(cs, "makecraft.spawn.set", 2))
+                .executes(this::execute));
     }
 
     @Override
@@ -32,6 +34,7 @@ public class SpawnSetCommand implements ICommand {
         assert player != null;
 
         MakeCraft.MAIN_CONFIG.spawnLocation = new Location(player.getBlockPos(), player.getPitch(), player.getYaw(), player.getEntityWorld());
+        MakeCraft.MAIN_CONFIG.save();
 
         source.sendFeedback(() -> Text.of("Set spawn."), false);
 

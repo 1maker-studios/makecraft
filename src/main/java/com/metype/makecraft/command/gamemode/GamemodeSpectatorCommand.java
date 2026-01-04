@@ -11,15 +11,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class GamemodeSpectatorCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("spectator")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("spectator")
                 .requires(Permissions.require("makecraft.gamemode.spectator", 2))
-                .executes(this::execute);
+                .executes(this::execute));
     }
 
     @Override

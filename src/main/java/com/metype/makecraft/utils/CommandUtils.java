@@ -26,6 +26,7 @@ import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.util.ErrorReporter;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Optional;
 
 public class CommandUtils {
@@ -59,6 +60,14 @@ public class CommandUtils {
             string = string.replaceFirst("\\{}", String.valueOf(o));
         }
         return string;
+    }
+
+    public static String format(String input, Map<String, Object> args) {
+        for(String argID : args.keySet()) {
+            if(!input.contains("{" + argID  + "}")) continue;
+            input = input.replaceFirst("\\{" + argID  + "}", args.get(argID).toString());
+        }
+        return input;
     }
 
     public static boolean savePlayerInventoryTo(String dataName, ServerPlayerEntity player) {

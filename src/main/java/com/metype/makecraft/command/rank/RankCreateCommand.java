@@ -1,7 +1,6 @@
 package com.metype.makecraft.command.rank;
 
 import com.metype.makecraft.command.ICommand;
-import com.metype.makecraft.command.providers.RankIDProvider;
 import com.metype.makecraft.rank.Rank;
 import com.metype.makecraft.rank.RankUtils;
 import com.metype.makecraft.utils.CommandUtils;
@@ -15,20 +14,22 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class RankCreateCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("create")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("create")
                 .requires(Permissions.require("makecraft.rank.create", 2))
                 .then(argument("identifier", IdentifierArgumentType.identifier())
                         .then(argument("rank_name", StringArgumentType.string())
                                 .executes(this::execute)
                         )
-                );
+                ));
     }
 
     @Override

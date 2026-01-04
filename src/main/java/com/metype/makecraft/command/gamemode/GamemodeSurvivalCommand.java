@@ -11,15 +11,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class GamemodeSurvivalCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("survival")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("survival")
                 .requires(Permissions.require("makecraft.gamemode.survival", 2))
-                .executes(this::execute);
+                .executes(this::execute));
     }
 
     @Override

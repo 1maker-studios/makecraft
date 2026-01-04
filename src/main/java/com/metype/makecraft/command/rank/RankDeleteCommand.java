@@ -13,6 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -21,13 +22,13 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class RankDeleteCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("delete")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("delete")
                 .requires(Permissions.require("makecraft.rank.delete", 2))
                 .then(argument("identifier", IdentifierArgumentType.identifier())
                         .suggests(RankIDProvider.all())
                         .executes(this::execute)
-                );
+                ));
     }
 
     @Override

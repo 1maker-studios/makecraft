@@ -29,13 +29,7 @@ public class LocationAdapter extends TypeAdapter<Location> {
         if(value.getWorld() == null) {
             out.value((String) null);
         } else {
-            for (RegistryKey<World> key : MakeCraft.SERVER.getWorldRegistryKeys()) {
-                World world = MakeCraft.SERVER.getWorld(key);
-                if (world == null) continue;
-                if (world.equals(value.getWorld())) {
-                    out.value(key.getValue().toString());
-                }
-            }
+            out.value(value.getWorld().getRegistryKey().getValue().toString());
         }
         out.endObject();
     }

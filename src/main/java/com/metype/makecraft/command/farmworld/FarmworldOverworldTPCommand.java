@@ -10,19 +10,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 
-import java.util.HashMap;
+import java.util.List;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class FarmworldOverworldTPCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("overworld")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("overworld")
                 .requires(Permissions.require("makecraft.farmworld.overworld", 0))
-                .executes(this::execute);
+                .executes(this::execute));
     }
 
     @Override

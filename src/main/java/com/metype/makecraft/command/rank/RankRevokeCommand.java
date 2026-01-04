@@ -16,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -24,15 +25,15 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class RankRevokeCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("revoke")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("revoke")
                 .requires(Permissions.require("makecraft.rank.give", 2))
                 .then(argument("identifier", IdentifierArgumentType.identifier())
                         .suggests(RankIDProvider.all())
                         .then(argument("player", EntityArgumentType.player())
                                 .executes(this::execute)
                         )
-                );
+                ));
     }
 
     @Override

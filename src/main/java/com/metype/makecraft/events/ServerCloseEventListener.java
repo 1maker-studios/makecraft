@@ -7,6 +7,7 @@ import com.metype.makecraft.utils.Utils;
 import me.isaiah.multiworld.ICreator;
 import me.isaiah.multiworld.MultiworldMod;
 import me.isaiah.multiworld.command.CreateCommand;
+import me.isaiah.multiworld.command.SetspawnCommand;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.kyori.adventure.text.Component;
 import net.minecraft.block.Blocks;
@@ -15,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +37,6 @@ public class ServerCloseEventListener {
     }
 
     private static boolean GIVEN_FIVE_MINUTE_WARNING = false;
-    private static boolean FIRST_TICK_OF_SHUTDOWN_STARTED = false;
 
 
     public static void runRestartChecks() {
@@ -166,10 +167,16 @@ public class ServerCloseEventListener {
         int i = spawnPos.getX();
         int j = spawnPos.getY() - 2;
         int k = spawnPos.getZ();
-        world.setSpawnPoint(WorldProperties.SpawnPoint.create(ServerWorld.NETHER, spawnPos, 0, 0));
+        try {
+            SetspawnCommand.setSpawn(world, spawnPos);
+        } catch (IOException e) {
+            MakeCraft.LOGGER.error("Failed to set world spawn for farmworld.");
+        }
+        //world.setSpawnPoint(WorldProperties.SpawnPoint.create(ServerWorld.NETHER, spawnPos, 0, 0));
         BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach((pos) -> world.setBlockState(pos, Blocks.AIR.getDefaultState()));
         BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach((pos) -> world.setBlockState(pos, Blocks.BEDROCK.getDefaultState()));
         world.setBlockState(new BlockPos(i, j, k), Blocks.LODESTONE.getDefaultState());
+        world.setBlockState(new BlockPos(i, j - 1, k), Blocks.BEDROCK.getDefaultState());
         if(gateway) {
             world.setBlockState(new BlockPos(i + 3, j + 1, k), Blocks.END_GATEWAY.getDefaultState());
         }

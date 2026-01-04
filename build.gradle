@@ -24,7 +24,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation include('net.kyori:adventure-platform-fabric:6.7.0') // for Minecraft 1.21.9
 
-    modCompileOnlyApi(files('libs/multiworld_fabric_1.21.9.jar'))
+    modCompileOnlyApi(files('libs/Multiworld-Fabric-1.21.10.jar'))
 
     include(modImplementation('me.lucko:fabric-permissions-api:0.5.0'))
     include(modImplementation('org.xerial:sqlite-jdbc:3.51.0.0'))

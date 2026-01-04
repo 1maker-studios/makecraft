@@ -71,11 +71,6 @@ public class RankSelectUI extends InteractiveInventory {
     }
 
     @Override
-    public int size() {
-        return 45;
-    }
-
-    @Override
     public void leftClick(int slot) {
         slot = slotToRawID(slot);
         if(shownRanks.size() <= slot) return;
@@ -86,7 +81,7 @@ public class RankSelectUI extends InteractiveInventory {
                 player.sendMessage(Text.of("An error occurred applying rank " + selectedRank.id + ". Contact staff."));
                 break;
             case 0:
-                player.sendMessage(MutableText.of(PlainTextContent.of("Applied rank! You are now ")).append(player.getName()));
+                player.sendMessage(MutableText.of(PlainTextContent.of("Applied rank! You are now ")).append(selectedRank.getRankFormatting(player.getStringifiedName())));
                 break;
             case 1:
                 player.sendMessage(Text.of("User already had rank applied, it has been removed."));

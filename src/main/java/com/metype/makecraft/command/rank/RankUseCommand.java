@@ -17,6 +17,7 @@ import net.minecraft.text.PlainTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -25,13 +26,13 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class RankUseCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("use")
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        return List.of(literal("use")
                 .requires(Permissions.require("makecraft.rank.use", 2))
                 .then(argument("identifier", IdentifierArgumentType.identifier())
                         .suggests(RankIDProvider.personal())
                         .executes(this::execute)
-                );
+                ));
     }
 
     @Override
@@ -53,7 +54,7 @@ public class RankUseCommand implements ICommand {
                 context.getSource().sendFeedback(() -> Text.of("An error occurred applying rank " + id + ". Contact staff."), true);
                 break;
             case 0:
-                context.getSource().sendFeedback(() -> rank.get().getRankFormatting(player.getStringifiedName()), false);
+                context.getSource().sendFeedback(() -> MutableText.of(PlainTextContent.of("Applied rank! You are now ")).append(rank.get().getRankFormatting(player.getStringifiedName())), false);
                 break;
             case 1:
                 context.getSource().sendFeedback(() -> Text.of("User already had rank applied, it has been removed."), false);

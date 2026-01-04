@@ -43,6 +43,8 @@ public class Location {
         return this.blockPos.getZ();
     }
 
+    public BlockPos getBlockPos() { return this.blockPos; }
+
     public float getPitch() {
         return this.pitch;
     }

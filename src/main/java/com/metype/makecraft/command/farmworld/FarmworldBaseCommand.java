@@ -6,20 +6,21 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 
+import java.util.List;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class FarmworldBaseCommand implements ICommand {
 
     @Override
-    public LiteralArgumentBuilder<ServerCommandSource> register() {
-        return literal("farm")
-                .then(new FarmworldOverworldTPCommand().register())
-                .then(new FarmworldNetherTPCommand().register())
-                .then(new FarmworldOverworldTPCommand().register());
-    }
+    public List<LiteralArgumentBuilder<ServerCommandSource>> build() {
+        LiteralArgumentBuilder<ServerCommandSource> farmCommand = literal("farm");
 
-    @Override
-    public int execute(CommandContext<ServerCommandSource> context) {
-        return CommandUtils.COMMAND_SUCCESS;
+        new FarmworldOverworldTPCommand().build().forEach(farmCommand::then);
+        new FarmworldNetherTPCommand().build().forEach(farmCommand::then);
+        new FarmworldEndTPCommand().build().forEach(farmCommand::then);
+        new FarmworldRefreshCommand().build().forEach(farmCommand::then);
+
+        return List.of(farmCommand);
     }
 }

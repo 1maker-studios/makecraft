@@ -12,49 +12,54 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class InteractiveInventory implements Inventory {
-    protected final Map<Integer, ItemStack> uiButtons = new HashMap<>();
-    protected final ItemStack bgItem = new ItemStack(RegistryEntry.of(Items.LIGHT_GRAY_STAINED_GLASS_PANE), 1, ComponentChanges.builder().add(Component.of(DataComponentTypes.CUSTOM_NAME, Text.of(""))).build());
+public class DummyInventory implements Inventory {
+    protected List<ItemStack> items = new ArrayList<>();
 
-    protected ServerPlayerEntity interactor;
-
-    public InteractiveInventory(ServerPlayerEntity interactor) {
-        this.interactor = interactor;
+    public DummyInventory() {
+        for(int i = 0; i < size(); i++) {
+            items.add(i, ItemStack.EMPTY);
+        }
     }
 
     @Override
     public int size() {
-        return 54;
+        return 45;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return items.isEmpty();
     }
 
     @Override
     public ItemStack getStack(int slot) {
-        return uiButtons.getOrDefault(slot, (slot % 9 == 0 || slot < 9 || slot > size() - 9 || slot % 9 == 8) ? bgItem : ItemStack.EMPTY);
+        if(slot < 0 || slot >= items.size()) return ItemStack.EMPTY;
+        return items.get(slot);
     }
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
-        leftClick(slot);
-        return ItemStack.EMPTY;
+        ItemStack get = getStack(slot);
+        if(amount < 0) amount = get.getCount();
+        if(get.isEmpty()) return ItemStack.EMPTY;
+        ItemStack ret = get.copyWithCount(amount);
+        get.setCount(get.getCount() - amount);
+        return ret;
     }
 
     @Override
     public ItemStack removeStack(int slot) {
-        leftClick(slot);
-        return ItemStack.EMPTY;
+        return removeStack(slot, -1);
     }
 
     @Override
     public void setStack(int slot, ItemStack stack) {
-
+        items.set(slot, stack);
     }
 
     @Override
@@ -69,14 +74,6 @@ public class InteractiveInventory implements Inventory {
 
     @Override
     public void clear() {
-
-    }
-
-    public void leftClick(int slot) {
-
-    }
-
-    public void shiftClick(int slot) {
 
     }
 }
